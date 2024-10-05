@@ -115,8 +115,8 @@ class CourseDataset:
 
         query.awaitTermination()
         
-        
-    def __upsert_data(self, microBatchDF, batch):
+    @staticmethod
+    def __upsert_data(microBatchDF, batch):
         microBatchDF.createOrReplaceTempView("orders_microbatch")
     
         sql_query = """
@@ -127,8 +127,9 @@ class CourseDataset:
         """
 
         microBatchDF.sparkSession.sql(sql_query)
-        
-    def __batch_upsert(self, microBatchDF, batchId):
+    
+    @staticmethod
+    def __batch_upsert(microBatchDF, batchId):
         window = Window.partitionBy("customer_id").orderBy(F.col("row_time").desc())
         
         (microBatchDF.filter(F.col("row_status").isin(["insert", "update"]))
@@ -149,7 +150,7 @@ class CourseDataset:
 
         microBatchDF.sparkSession.sql(query)
         
-    
+    @staticmethod
     def __type2_upsert(self, microBatchDF, batch):
         microBatchDF.createOrReplaceTempView("updates")
 
